@@ -63,3 +63,28 @@ git merge 브랜치명 => main에 합칠 브랜치명을 명시하고 합친다
 3. feature
 4. release
 5. hotfix
+▼ -- ▼ -- ▼
+main 브랜치(안전)
+ㅣ
+▼
+develop (브랜치, 신기능 개발하는 곳)
+ㅣ
+▼
+feature/기능명 (브랜치, 신기능 개발해보고 괜찮으면 develop에 merge)
+
+합쳐진 브랜치들을 release라는 브랜치를 만들고 테스트를 해본다
+완성이 되면 main에 다시 합친다 -> 배포
+& release를 develop에도 merge한다 -> 계속 개발을 해야하기 때문
+
+버그가 생기면 hotfix라는 브랜치를 바로 쳐서 버그 수정을 하고 main에 merge(develop에도)하고 배포한다
+
+pros : 안정적으로 버전별 배포 가능
+cons : CI/CD 이런거 하는 곳은 안좋아함
+
+-- Trunk-based --
+"브랜치 하나만 잘 관리하자"
+main 브랜치 하나만 유지하되, 새로운 기능들을 추가할 시, feature1, 2 등으로 브랜치를 만들어서 바로 main에 merge
+
+pros : 소스코드가 한 곳에만 있어서 편하다
+cons : 테스트가 많이, 자주 필요하다
+안정화된 프로젝트 들이 잘 쓴다
