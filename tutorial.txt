@@ -47,3 +47,9 @@ git log --oneline --all --graph => 그래프 형식으로 로그를 보여준다
 
 -- Details --
 HEAD : 나의 위치 ((HEAD -> main => 현재 main에 있다))
+
+-- merge --
+먼저 메인이 될 브랜치로 이동 후,
+git merge 브랜치명 => main에 합칠 브랜치명을 명시하고 합친다
+* 같은 파일의 같은 내용을 수정 시에는 어떤걸 남길지 물어본다
+이후 다시 add와 commit을 하면 끝 
