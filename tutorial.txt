@@ -4,5 +4,11 @@ Powershell로 열기
 git config --global user.email "내 이메일"
 git config --global user.name "내 이름"
 
--- 기록 남기기 파트 --
+-- Git 기본 세팅 --
 작업폴더에서 git 쓰고 싶으면 "git init"부터 입력 -> Git이라는 소프트웨어가 작업을 감시하기 시작함
+
+-- Git 기록 방법 --
+git add 파일명 => 파일 현재 상태를 기록하는 방법, 기록할 파일 고르기
+git commit -m '메모' => 고른 파일 기록 명령
+# 버전 생성이라고도 한다
+
