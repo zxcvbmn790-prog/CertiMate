@@ -1,0 +1,8 @@
+-- 세팅 과정 --
+사용하고자 하는 파일에 "우클릭 + Shift"
+Powershell로 열기
+git config --global user.email "내 이메일"
+git config --global user.name "내 이름"
+
+-- 기록 남기기 파트 --
+작업폴더에서 git 쓰고 싶으면 "git init"부터 입력 -> Git이라는 소프트웨어가 작업을 감시하기 시작함
