@@ -1,0 +1,12 @@
+Hello Git
+BYE Gitgit
+깃허브에 파일을 올리는 (업데이트) 하는순서를 소개합니다.
+git config --global user.email "you@example.com" // 깃한테 내가 누구인지 밝히는 작업
+git config --global user.name "Your Name" //위와 동일 (하지않으면 올리기 불가능)
+----
+git add .  
+git commit -m '커밋할때 전하고싶은 내용입니다.'
+git branch -M main 
+git remote add origin (내가 올리고자 하는 곳의 레포지토리 주소)
+git push -u origin main
+업로드 완료
