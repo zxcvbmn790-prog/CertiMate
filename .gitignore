@@ -1,0 +1,13 @@
+# 백엔드 관련 (Spring/Gradle)
+.gradle/
+build/
+.settings/
+.classpath
+.project
+*.log
+.idea/
+
+# 프론트엔드 관련 (React)
+node_modules/
+dist/
+.DS_Store
