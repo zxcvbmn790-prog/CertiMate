@@ -1,60 +1,38 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Award, UserPlus, LogIn, User, ShieldCheck } from 'lucide-react'; // ShieldCheck 아이콘 추가
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-  const location = useLocation();
-  
-  // 현재 활성화된 페이지인지 확인하는 함수입니다.
-  const isActive = (path) => location.pathname === path;
-
-  // 가상의 관리자 여부 확인 변수입니다. (추후 실제 유저 데이터와 연동하세요)
-  const isAdmin = true; 
-
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 px-6 py-4 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        
-        {/* 1. 서비스 로고 영역 */}
-        <Link to="/" className="flex items-center space-x-2 group">
-          <div className="w-8 h-8 bg-[#3478B8] rounded flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-lg shadow-[#3478B8]/20">
-            <Award size={18} />
-          </div>
-          <span className="text-xl font-bold tracking-tighter text-[#3478B8]">자격한판</span>
-        </Link>
-        
-        {/* 2. 주요 서비스 메뉴 (내 정보 포함) */}
-        <div className="hidden md:flex space-x-10 text-sm font-semibold">
-          <Link to="/" className={`${isActive('/') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>홈</Link>
-          <Link to="/study" className={`${isActive('/study') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>학습관</Link>
-          <Link to="/calendar" className={`${isActive('/calendar') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>일정</Link>
-          <Link to="/community" className={`${isActive('/community') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>커뮤니티</Link>
+    <nav className="sticky top-0 z-50 bg-white border-b border-slate-200">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* justify-between을 사용해 양끝으로 로고와 우측 버튼을 밀어냅니다 */}
+        <div className="flex justify-between items-center h-16">
           
-          <Link to="/profile" className={`flex items-center ${isActive('/profile') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>
-            <User size={14} className="mr-1.5" /> 내 정보
-          </Link>
-        </div>
-
-        {/* 3. 인증 및 어드민 전환 영역 */}
-        <div className="flex items-center space-x-4">
-          {/* [추가된 부분] 관리자 권한일 때만 보이는 관리자 페이지 이동 태그 */}
-          {isAdmin && (
-            <Link 
-              to="/admin" 
-              className="mr-2 flex items-center px-3 py-1.5 bg-[#3478B8]/5 border border-[#3478B8]/20 text-[#3478B8] rounded-full hover:bg-[#3478B8]/10 transition-colors"
-            >
-              <ShieldCheck size={12} className="mr-1.5" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Admin Mode</span>
+          {/* 1. 좌측 로고 영역 */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="text-blue-600 text-2xl">📘</span>
+              <span className="text-xl font-extrabold text-blue-600 tracking-tighter">
+                자격한판
+              </span>
             </Link>
-          )}
+          </div>
 
-          <Link to="/register" className="text-xs font-black text-gray-400 hover:text-[#3478B8] flex items-center transition uppercase tracking-tighter">
-            <UserPlus size={14} className="mr-1.5" /> 회원가입
-          </Link>
+          {/* (기존에 있던 가운데 메뉴 영역은 삭제했습니다) */}
+
+          {/* 2. 우측 유저 액션 영역 */}
+          <div className="flex items-center space-x-3">
+            <button className="text-xs font-medium text-slate-500 border border-slate-300 rounded-full px-3 py-1.5 hover:bg-slate-50">
+              ADMIN MODE
+            </button>
+            <Link to="/register" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2">
+              회원가입
+            </Link>
+            <Link to="/login" className="text-sm font-semibold bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              로그인
+            </Link>
+          </div>
           
-          <Link to="/login" className="bg-[#3478B8] text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-lg shadow-[#3478B8]/20 hover:bg-[#2e69a3] transition flex items-center uppercase tracking-tighter">
-            <LogIn size={14} className="mr-1.5" /> 로그인
-          </Link>
         </div>
       </div>
     </nav>
