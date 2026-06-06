@@ -1,0 +1,25 @@
+src/main/java/com/capstone/project/quiz
+├── controller
+│   └── WrongAnswerController.java   // 클라이언트(UI)의 요청을 받는 곳
+├── service
+│   └── WrongAnswerService.java      // 오답 기능의 핵심 로직이 들어가는 곳
+├── repository
+│   └── QuizHistoryRepository.java   // DB(MySQL)에 접근하는 곳
+└── dto
+    ├── WrongAnswerResponse.java     // UI에 오답 정보를 규격화해서 던져줄 때 사용
+    └── ReplayRequest.java           // 오답을 다시 풀고 제출할 때 사용
+
+    ---------------------------------
+
+3. 앞으로 진행해야 할 스텝 (Todo List)
+
+    Entity 클래스 만들기: ERD에 기재된 USER_QUIZ_HISTORY 테이블과 AI_LEARN 테이블을 JPA @Entity로 매핑해 주세요. (서로 N:1 연관관계 설정을 해주면 위 서비스 코드가 아주 매끄럽게 작동합니다.)
+
+    테스트 데이터 넣기: MySQL에 직접 쿼리를 날려서 is_correct가 false인 샘플 데이터를 2~3개 넣어둡니다.
+
+    API 작동 테스트: Postman이나 인텔리제이의 HTTP Client를 사용해서 GET http://localhost:8080/api/quiz/wrong-answers/1을 호출했을 때 오답 리스트가 이쁘게 JSON으로 출력되는지 확인합니다.
+
+    ---------------------------------
+
+    단위테스트를 위한 테스트 스텁과, 테스트 드라이버
+    => 가짜로 repository에 UserQuizHistory 넣어둠
