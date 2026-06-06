@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Award, Mail, Lock, ChevronRight } from 'lucide-react';
+import api from '../api/axios';
 
-/**
- * [Login 컴포넌트]
- * REQ-AUTH-003: 사용자 로그인 및 인증 토큰 발급 기능을 지원합니다.
- * REQ-AUTH-001: 카카오톡 소셜 로그인 연동 기능을 포함합니다.
- */
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
+  const navigate = useNavigate();
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/auth/login', { email: email, password: pw });
+      alert("로그인에 성공했습니다!");
+      
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('loginTime', new Date().getTime());
+      
+      window.location.href = '/'; 
+    } catch (error) {
+      alert("로그인 실패: 이메일이나 비밀번호를 확인해주세요.");
+    }
+  };
 
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[#EAECEF] flex items-center justify-center py-12 px-6">
       <div className="max-w-md w-full bg-white rounded-[32px] shadow-2xl overflow-hidden border border-gray-100 transition-all">
         
-        {/* 상단 디자인 섹션 */}
         <div className="bg-[#3478B8] p-10 text-center text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
           <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
@@ -26,13 +37,13 @@ const Login = () => {
         </div>
 
         <div className="p-10 space-y-8">
-          {/* 🚨 [캡스톤 로직 추가] REQ-AUTH-001: 카카오 소셜 로그인 버튼 onClick 연동 */}
+          
+          {/* 🚨 [환경변수 적용 완료] 하드코딩된 키가 사라졌습니다! */}
           <button 
             type="button"
             onClick={() => {
-              // 🚨 아래 REST_API_KEY 변수에 카카오 디벨로퍼스에서 발급받은 'REST API 키'를 넣으세요!
-              const REST_API_KEY = "5522293bc377b347bdfb3f6549e722fa";
-              const REDIRECT_URI = "http://localhost:3000/auth/kakao/callback";
+              const REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+              const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI;
               window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
             }}
             className="w-full bg-[#FEE500] text-[#3c1e1e] py-4 rounded-xl font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition transform active:scale-[0.98]"
@@ -46,8 +57,7 @@ const Login = () => {
             <span className="bg-white px-4 text-[10px] text-gray-300 font-black uppercase tracking-widest absolute">Or Email Login</span>
           </div>
 
-          {/* REQ-AUTH-003: 이메일/비밀번호 기반 로그인 폼  */}
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleEmailLogin}>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase ml-1 tracking-widest">Email Address</label>
               <div className="relative">
@@ -65,7 +75,9 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Password</label>
-                <button type="button" className="text-[10px] text-[#3478B8] font-bold">비밀번호 찾기</button>
+                <Link to="/find-password" className="text-[10px] text-[#3478B8] font-bold hover:underline">
+                  비밀번호 찾기
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
@@ -84,7 +96,6 @@ const Login = () => {
             </button>
           </form>
 
-          {/* 회원가입 유도 */}
           <p className="text-center text-[11px] font-bold text-gray-300">
             아직 계정이 없으신가요? 
             <Link to="/register" className="text-[#3478B8] underline ml-1 hover:text-[#2e69a3] transition">

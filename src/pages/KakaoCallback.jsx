@@ -1,21 +1,24 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios'; // 🚨 이전에 만들어둔 axios.js 경로에 맞게 임포트!
+import api from '../api/axios'; 
 
 const KakaoCallback = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 1. URL에서 카카오가 준 'code' 값을 뽑아냅니다.
         const code = new URL(window.location.href).searchParams.get("code");
 
-        // 2. 백엔드로 코드를 쏩니다.
         const sendKakaoCode = async () => {
             try {
                 const response = await api.post('/auth/kakao', { code: code });
                 console.log(response.data);
                 alert("카카오 로그인에 성공했습니다!");
-                navigate('/'); // 홈으로 이동
+                
+                // 🚨 [핵심] 카카오 로그인 성공 시에도 도장 및 시간 찍기!
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loginTime', new Date().getTime());
+                
+                window.location.href = '/'; // 홈으로 이동하며 상단바 갱신
             } catch (error) {
                 console.error("카카오 로그인 실패:", error);
                 alert("카카오 로그인에 실패했습니다.");

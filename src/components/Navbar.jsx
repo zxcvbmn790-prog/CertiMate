@@ -1,48 +1,95 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Award, UserPlus, LogIn, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-  const location = useLocation();
-  
-  // 현재 활성화된 페이지인지 확인하는 함수입니다.
-  const isActive = (path) => location.pathname === path;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState('00:00:00'); // 🚨 실시간 카운터용 상태
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const loginTime = localStorage.getItem('loginTime');
+
+      if (loggedIn && loginTime) {
+        setIsLoggedIn(true);
+
+        // 🚨 [핵심] 1초마다 접속 유지 시간을 계산하는 타이머(스톱워치)
+        const timer = setInterval(() => {
+          const now = new Date().getTime();
+          const diff = now - parseInt(loginTime);
+          const twoHours = 2 * 60 * 60 * 1000;
+
+          if (diff >= twoHours) {
+            clearInterval(timer);
+            handleLogout("보안을 위해 2시간이 경과하여 자동 로그아웃 되었습니다.");
+          } else {
+            // 남은 시간을 00:00:00 포맷으로 변환
+            const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((diff / (1000 * 60)) % 60).toString().padStart(2, '0');
+            const seconds = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+            
+            setElapsedTime(`${hours}:${minutes}:${seconds}`);
+          }
+        }, 1000); // 1000ms = 1초마다 실행
+
+        // 컴포넌트가 화면에서 사라질 때 타이머 청소
+        return () => clearInterval(timer);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = (message = "로그아웃 되었습니다.") => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loginTime');
+    setIsLoggedIn(false);
+    alert(message);
+    window.location.href = '/'; 
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 px-6 py-4 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        
-        {/* 1. 서비스 로고 영역 */}
-        <Link to="/" className="flex items-center space-x-2 group">
-          <div className="w-8 h-8 bg-[#3478B8] rounded flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-lg shadow-[#3478B8]/20">
-            <Award size={18} />
-          </div>
-          <span className="text-xl font-bold tracking-tighter text-[#3478B8]">자격한판</span>
-        </Link>
-        
-        {/* 2. 주요 서비스 메뉴 (내 정보 포함) */}
-        <div className="hidden md:flex space-x-10 text-sm font-semibold">
-          <Link to="/" className={`${isActive('/') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>홈</Link>
-          <Link to="/study" className={`${isActive('/study') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>학습관</Link>
-          <Link to="/calendar" className={`${isActive('/calendar') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>일정</Link>
-          <Link to="/community" className={`${isActive('/community') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>커뮤니티</Link>
-          
-          {/* 보강된 내 정보 메뉴입니다. */}
-          <Link to="/profile" className={`flex items-center ${isActive('/profile') ? 'text-[#3478B8]' : 'text-[#4A4F58] hover:text-[#3478B8]'} transition`}>
-            <User size={14} className="mr-1.5" /> 내 정보
-          </Link>
-        </div>
+    <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+      <Link to="/" className="text-2xl font-black text-[#3478B8]">
+        CertiMate
+      </Link>
 
-        {/* 3. 인증 메뉴 영역 */}
-        <div className="flex items-center space-x-5">
-          <Link to="/register" className="text-xs font-black text-gray-400 hover:text-[#3478B8] flex items-center transition uppercase tracking-tighter">
-            <UserPlus size={14} className="mr-1.5" /> 회원가입
-          </Link>
-          
-          <Link to="/login" className="bg-[#3478B8] text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-lg shadow-[#3478B8]/20 hover:bg-[#2e69a3] transition flex items-center uppercase tracking-tighter">
-            <LogIn size={14} className="mr-1.5" /> 로그인
-          </Link>
-        </div>
+      <div className="flex space-x-6 font-bold text-gray-500">
+        <Link to="/" className="hover:text-[#3478B8] transition">홈</Link>
+        <Link to="/community" className="hover:text-[#3478B8] transition">커뮤니티</Link>
+        
+        {isLoggedIn && (
+          <Link to="/study" className="hover:text-[#3478B8] transition">학습관</Link>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-4">
+        {isLoggedIn ? (
+          <div className="flex items-center space-x-4">
+            {/* 🚨 실시간 스톱워치 출력부 */}
+            <span className="text-[12px] text-[#3478B8] font-bold bg-[#3478B8]/10 px-3 py-1.5 rounded-full font-mono flex items-center">
+              <span className="mr-1 text-gray-500">접속시간</span> {elapsedTime}
+            </span>
+            <Link to="/profile" className="text-sm font-bold text-[#3478B8] hover:underline">
+              내정보
+            </Link>
+            <button 
+              onClick={() => handleLogout()}
+              className="text-sm bg-gray-100 px-4 py-2 rounded-lg font-bold text-gray-600 hover:bg-gray-200 transition"
+            >
+              로그아웃
+            </button>
+          </div>
+        ) : (
+          <>
+            <Link to="/login" className="text-sm font-bold text-gray-600 hover:text-[#3478B8] transition">
+              로그인
+            </Link>
+            <Link to="/register" className="text-sm bg-[#3478B8] text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-[#2a6296] transition">
+              회원가입
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

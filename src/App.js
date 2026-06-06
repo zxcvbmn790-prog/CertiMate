@@ -9,17 +9,15 @@ import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
-// 🚨 [캡스톤 추가] 카카오 로그인 콜백 페이지 import
 import KakaoCallback from './pages/KakaoCallback'; 
+// 🚨 [새로 추가된 비밀번호 찾기 페이지]
+import FindPassword from './pages/FindPassword'; 
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-[#EAECEF] font-sans text-[#4A4F58]">
-        {/* 모든 화면에서 공통으로 사용되는 상단 네비게이션입니다. */}
         <Navbar />
-        
-        {/* 각 URL 경로에 따라 렌더링될 화면을 정의합니다. */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/study" element={<Study />} />
@@ -29,8 +27,9 @@ function App() {
           <Route path="/login" element={<Login />} /> 
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<Admin />} />
-          {/* 🚨 [캡스톤 추가] 카카오 로그인 중간 정거장 라우터 */}
           <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
+          {/* 🚨 비밀번호 찾기 주소 연결 */}
+          <Route path="/find-password" element={<FindPassword />} />
         </Routes>
       </div>
     </Router>
