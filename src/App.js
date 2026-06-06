@@ -7,7 +7,10 @@ import Calendar from './pages/Calendar';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
-import Login from './pages/Login'
+import Login from './pages/Login';
+import Admin from './pages/Admin';
+// 🚨 [캡스톤 추가] 카카오 로그인 콜백 페이지 import
+import KakaoCallback from './pages/KakaoCallback'; 
 
 function App() {
   return (
@@ -23,8 +26,11 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/community" element={<Community />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} /> {/* 로그인 경로 추가 */}
+          <Route path="/login" element={<Login />} /> 
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<Admin />} />
+          {/* 🚨 [캡스톤 추가] 카카오 로그인 중간 정거장 라우터 */}
+          <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
         </Routes>
       </div>
     </Router>
