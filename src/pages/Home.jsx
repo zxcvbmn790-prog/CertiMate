@@ -1,41 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  // -------------------------------------------------------------
-  // [1] 상태 관리 (State Management)
-  // 검색창에 사용자가 입력하는 텍스트를 실시간으로 저장하는 공간입니다.
-  // -------------------------------------------------------------
   const [searchKeyword, setSearchKeyword] = useState('');
   const navigate = useNavigate();
 
-  // -------------------------------------------------------------
-  // [2] 검색 로직 (Business Logic)
-  // 돋보기 버튼을 누르거나 엔터키를 쳤을 때 실행되는 함수입니다.
-  // 초보자를 위한 설명: 여기서 백엔드(Spring Boot)로 검색어를 보내서
-  // DB의 CERTIFICATION 테이블을 조회하게 될 핵심 뼈대입니다.
-  // -------------------------------------------------------------
   const handleSearch = () => {
     if (!searchKeyword.trim()) {
       alert("검색어를 입력해 주세요!");
       return;
     }
-    // 향후 검색 결과 페이지(예: /study?query=검색어)로 이동시키는 로직이 들어갈 곳입니다.
     alert(`"${searchKeyword}" 자격증을 검색합니다! (기능 준비중)`);
-    // navigate(`/study?query=${encodeURIComponent(searchKeyword)}`); 
   };
 
   const handleKeyDown = (e) => {
-    // 사용자가 엔터(Enter) 키를 누르면 바로 검색이 실행되도록 UX를 개선했습니다.
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
-  // -------------------------------------------------------------
-  // [3] 화면 렌더링 (View)
-  // 팀원의 기존 UI 코드를 유지하되, 리액트의 동작 원리에 맞게 결합했습니다.
-  // -------------------------------------------------------------
   return (
     <div className="relative w-full min-h-[calc(100vh-64px)] flex flex-col justify-between overflow-hidden bg-slate-900">
       
@@ -68,7 +51,6 @@ const Home = () => {
               placeholder="관심있는 자격증을 검색해보세요" 
               className="flex-1 outline-none text-slate-800 text-lg bg-transparent"
             />
-            {/* 검색 실행 버튼 */}
             <button 
               onClick={handleSearch}
               className="text-slate-400 hover:text-blue-600 transition-colors"
@@ -79,9 +61,7 @@ const Home = () => {
             </button>
           </div>
 
-          {/* 추천 키워드 영역 (향후 백엔드 데이터 연동 예정) */}
           <div className="flex flex-wrap gap-3">
-            {/* 지금은 하드코딩이지만, 추후 map() 함수를 써서 DB 데이터를 뿌려줄 뼈대입니다. */}
             <CategoryPill text="정보처리기사" active={true} onClick={() => setSearchKeyword('정보처리기사')} />
             <CategoryPill text="한국사능력검정" onClick={() => setSearchKeyword('한국사능력검정')} />
             <CategoryPill text="IT/컴퓨터" onClick={() => setSearchKeyword('IT/컴퓨터')} />
@@ -95,6 +75,7 @@ const Home = () => {
       <div className="relative z-10 w-full border-t border-white/20 bg-black/40 backdrop-blur-md">
         <div className="max-w-screen-2xl mx-auto px-6 sm:px-12 lg:px-20 py-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* 🚨 BottomMenuBox 컴포넌트 내부에서 권한 검사를 수행하도록 수정되었습니다 */}
             <BottomMenuBox title="AI 추천 자격증" link="/study" />
             <BottomMenuBox title="시험 일정 달력" link="/calendar" />
             <BottomMenuBox title="합격 후기 게시판" link="/community" />
@@ -107,9 +88,8 @@ const Home = () => {
   );
 };
 
-/* --- 하위 UI 컴포넌트들 (성능을 위해 메인 컴포넌트 밖으로 분리) --- */
+/* --- 하위 UI 컴포넌트들 --- */
 
-// 카테고리 태그 컴포넌트
 const CategoryPill = ({ text, active, onClick }) => (
   <button 
     onClick={onClick}
@@ -123,16 +103,32 @@ const CategoryPill = ({ text, active, onClick }) => (
   </button>
 );
 
-// 하단 메뉴 박스 컴포넌트
-const BottomMenuBox = ({ title, link }) => (
-  <Link 
-    to={link}
-    className="group flex items-center justify-center h-14 px-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white text-white hover:text-slate-900 transition-all duration-300"
-  >
-    <span className="font-semibold text-sm md:text-base tracking-wide text-center break-keep">
-      {title}
-    </span>
-  </Link>
-);
+// 🚨 [핵심 변경점] 버튼을 클릭할 때마다 로그인 여부를 검사하는 문지기 로직을 달았습니다.
+const BottomMenuBox = ({ title, link }) => {
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) {
+      alert("로그인이 필요한 서비스입니다. 로그인 화면으로 이동합니다.");
+      navigate('/login');
+    } else {
+      navigate(link); // 로그인된 사람만 통과!
+    }
+  };
+
+  return (
+    <button 
+      onClick={handleClick}
+      className="group flex w-full items-center justify-center h-14 px-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white text-white hover:text-slate-900 transition-all duration-300"
+    >
+      <span className="font-semibold text-sm md:text-base tracking-wide text-center break-keep">
+        {title}
+      </span>
+    </button>
+  );
+};
 
 export default Home;

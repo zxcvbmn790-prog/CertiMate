@@ -6,7 +6,6 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [elapsedTime, setElapsedTime] = useState('00:00:00');
 
-  // 💡 [이식 완료] 2시간 스톱워치 및 로그인 상태 체크 로직
   useEffect(() => {
     const checkAuth = () => {
       const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -60,13 +59,15 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            <Link to="/admin" className="text-xs font-medium text-slate-500 border border-slate-300 rounded-full px-3 py-1.5 hover:bg-slate-50">
-              ADMIN MODE
-            </Link>
-            
-            {/* 🚨 [이식 완료] 로그인 상태에 따른 버튼 변경 */}
             {isLoggedIn ? (
+              // 🚨 로그인 한 사용자에게 보여줄 영역
               <div className="flex items-center space-x-4">
+                
+                {/* 🚨 ADMIN MODE 버튼을 이곳으로 이사시켰습니다. (로그인해야만 보임) */}
+                <Link to="/admin" className="text-xs font-medium text-slate-500 border border-slate-300 rounded-full px-3 py-1.5 hover:bg-slate-50 transition">
+                  ADMIN MODE
+                </Link>
+
                 <span className="text-[12px] text-[#3478B8] font-bold bg-[#3478B8]/10 px-3 py-1.5 rounded-full font-mono flex items-center">
                   <span className="mr-1 text-gray-500">접속시간</span> {elapsedTime}
                 </span>
@@ -81,6 +82,7 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
+              // 🚨 로그인 안 한 손님에게 보여줄 영역
               <>
                 <Link to="/register" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2">
                   회원가입
