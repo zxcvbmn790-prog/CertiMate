@@ -13,7 +13,7 @@ const Navbar = () => {
             <Link to="/" className="flex items-center gap-2">
               <span className="text-blue-600 text-2xl">📘</span>
               <span className="text-xl font-extrabold text-blue-600 tracking-tighter">
-                자격한판
+                CertiMate
               </span>
             </Link>
           </div>
