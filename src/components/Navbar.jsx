@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState('00:00:00'); // 🚨 실시간 카운터용 상태
+  const [elapsedTime, setElapsedTime] = useState('00:00:00');
 
+  // 💡 [이식 완료] 2시간 스톱워치 및 로그인 상태 체크 로직
   useEffect(() => {
     const checkAuth = () => {
       const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -13,7 +15,6 @@ const Navbar = () => {
       if (loggedIn && loginTime) {
         setIsLoggedIn(true);
 
-        // 🚨 [핵심] 1초마다 접속 유지 시간을 계산하는 타이머(스톱워치)
         const timer = setInterval(() => {
           const now = new Date().getTime();
           const diff = now - parseInt(loginTime);
@@ -23,20 +24,16 @@ const Navbar = () => {
             clearInterval(timer);
             handleLogout("보안을 위해 2시간이 경과하여 자동 로그아웃 되었습니다.");
           } else {
-            // 남은 시간을 00:00:00 포맷으로 변환
             const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
             const minutes = Math.floor((diff / (1000 * 60)) % 60).toString().padStart(2, '0');
             const seconds = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
-            
             setElapsedTime(`${hours}:${minutes}:${seconds}`);
           }
-        }, 1000); // 1000ms = 1초마다 실행
+        }, 1000);
 
-        // 컴포넌트가 화면에서 사라질 때 타이머 청소
         return () => clearInterval(timer);
       }
     };
-
     checkAuth();
   }, []);
 
@@ -49,47 +46,53 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-black text-[#3478B8]">
-        CertiMate
-      </Link>
-
-      <div className="flex space-x-6 font-bold text-gray-500">
-        <Link to="/" className="hover:text-[#3478B8] transition">홈</Link>
-        <Link to="/community" className="hover:text-[#3478B8] transition">커뮤니티</Link>
-        
-        {isLoggedIn && (
-          <Link to="/study" className="hover:text-[#3478B8] transition">학습관</Link>
-        )}
-      </div>
-
-      <div className="flex items-center space-x-4">
-        {isLoggedIn ? (
-          <div className="flex items-center space-x-4">
-            {/* 🚨 실시간 스톱워치 출력부 */}
-            <span className="text-[12px] text-[#3478B8] font-bold bg-[#3478B8]/10 px-3 py-1.5 rounded-full font-mono flex items-center">
-              <span className="mr-1 text-gray-500">접속시간</span> {elapsedTime}
-            </span>
-            <Link to="/profile" className="text-sm font-bold text-[#3478B8] hover:underline">
-              내정보
+    <nav className="sticky top-0 z-50 bg-white border-b border-slate-200">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="text-blue-600 text-2xl">📘</span>
+              <span className="text-xl font-extrabold text-blue-600 tracking-tighter">
+                CertiMate
+              </span>
             </Link>
-            <button 
-              onClick={() => handleLogout()}
-              className="text-sm bg-gray-100 px-4 py-2 rounded-lg font-bold text-gray-600 hover:bg-gray-200 transition"
-            >
-              로그아웃
-            </button>
           </div>
-        ) : (
-          <>
-            <Link to="/login" className="text-sm font-bold text-gray-600 hover:text-[#3478B8] transition">
-              로그인
+
+          <div className="flex items-center space-x-3">
+            <Link to="/admin" className="text-xs font-medium text-slate-500 border border-slate-300 rounded-full px-3 py-1.5 hover:bg-slate-50">
+              ADMIN MODE
             </Link>
-            <Link to="/register" className="text-sm bg-[#3478B8] text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-[#2a6296] transition">
-              회원가입
-            </Link>
-          </>
-        )}
+            
+            {/* 🚨 [이식 완료] 로그인 상태에 따른 버튼 변경 */}
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-[12px] text-[#3478B8] font-bold bg-[#3478B8]/10 px-3 py-1.5 rounded-full font-mono flex items-center">
+                  <span className="mr-1 text-gray-500">접속시간</span> {elapsedTime}
+                </span>
+                <Link to="/profile" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2">
+                  내정보
+                </Link>
+                <button 
+                  onClick={() => handleLogout()}
+                  className="text-sm font-semibold bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  로그아웃
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/register" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2">
+                  회원가입
+                </Link>
+                <Link to="/login" className="text-sm font-semibold bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  로그인
+                </Link>
+              </>
+            )}
+          </div>
+          
+        </div>
       </div>
     </nav>
   );

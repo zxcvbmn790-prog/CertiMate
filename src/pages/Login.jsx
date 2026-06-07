@@ -8,6 +8,7 @@ const Login = () => {
   const [pw, setPw] = useState('');
   const navigate = useNavigate();
 
+  // 💡 [이식 완료] 이메일 로그인 처리 및 로컬스토리지 저장
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     try {
@@ -37,8 +38,7 @@ const Login = () => {
         </div>
 
         <div className="p-10 space-y-8">
-          
-          {/* 🚨 [환경변수 적용 완료] 하드코딩된 키가 사라졌습니다! */}
+          {/* 🚨 [이식 완료] 환경변수 활용 카카오 로그인 */}
           <button 
             type="button"
             onClick={() => {
@@ -63,9 +63,7 @@ const Login = () => {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
                 <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="이메일을 입력합니다" 
                   className="w-full bg-gray-50 border border-gray-100 p-4 pl-12 rounded-xl outline-none focus:border-[#3478B8] transition text-sm font-medium" 
                 />
@@ -75,16 +73,13 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Password</label>
-                <Link to="/find-password" className="text-[10px] text-[#3478B8] font-bold hover:underline">
-                  비밀번호 찾기
-                </Link>
+                {/* 🚨 [이식 완료] 비밀번호 찾기 연동 */}
+                <Link to="/find-password" className="text-[10px] text-[#3478B8] font-bold hover:underline">비밀번호 찾기</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
                 <input 
-                  type="password" 
-                  value={pw}
-                  onChange={(e) => setPw(e.target.value)}
+                  type="password" value={pw} onChange={(e) => setPw(e.target.value)}
                   placeholder="비밀번호를 입력합니다" 
                   className="w-full bg-gray-50 border border-gray-100 p-4 pl-12 rounded-xl outline-none focus:border-[#3478B8] transition text-sm font-medium" 
                 />
