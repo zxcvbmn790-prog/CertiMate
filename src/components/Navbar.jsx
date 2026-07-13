@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Award, UserPlus, LogIn, User, ShieldCheck } from 'lucide-react'; // ShieldCheck 아이콘 추가
+import { Award, UserPlus, LogIn, User, ShieldCheck, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   // 현재 활성화된 페이지인지 확인하는 함수입니다.
   const isActive = (path) => location.pathname === path;
 
   // 가상의 관리자 여부 확인 변수입니다. (추후 실제 유저 데이터와 연동하세요)
-  const isAdmin = true; 
+  const isAdmin = true;
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loginTime');
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 px-6 py-4 shadow-sm">
@@ -37,10 +49,10 @@ const Navbar = () => {
 
         {/* 3. 인증 및 어드민 전환 영역 */}
         <div className="flex items-center space-x-4">
-          {/* [추가된 부분] 관리자 권한일 때만 보이는 관리자 페이지 이동 태그 */}
-          {isAdmin && (
-            <Link 
-              to="/admin" 
+          {/* 관리자 권한 + 로그인 상태일 때만 보이는 관리자 페이지 이동 태그 */}
+          {isAdmin && isLoggedIn && (
+            <Link
+              to="/admin"
               className="mr-2 flex items-center px-3 py-1.5 bg-[#3478B8]/5 border border-[#3478B8]/20 text-[#3478B8] rounded-full hover:bg-[#3478B8]/10 transition-colors"
             >
               <ShieldCheck size={12} className="mr-1.5" />
@@ -48,13 +60,24 @@ const Navbar = () => {
             </Link>
           )}
 
-          <Link to="/register" className="text-xs font-black text-gray-400 hover:text-[#3478B8] flex items-center transition uppercase tracking-tighter">
-            <UserPlus size={14} className="mr-1.5" /> 회원가입
-          </Link>
-          
-          <Link to="/login" className="bg-[#3478B8] text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-lg shadow-[#3478B8]/20 hover:bg-[#2e69a3] transition flex items-center uppercase tracking-tighter">
-            <LogIn size={14} className="mr-1.5" /> 로그인
-          </Link>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="text-xs font-black text-gray-400 hover:text-[#3478B8] flex items-center transition uppercase tracking-tighter"
+            >
+              <LogOut size={14} className="mr-1.5" /> 로그아웃
+            </button>
+          ) : (
+            <>
+              <Link to="/register" className="text-xs font-black text-gray-400 hover:text-[#3478B8] flex items-center transition uppercase tracking-tighter">
+                <UserPlus size={14} className="mr-1.5" /> 회원가입
+              </Link>
+
+              <Link to="/login" className="bg-[#3478B8] text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-lg shadow-[#3478B8]/20 hover:bg-[#2e69a3] transition flex items-center uppercase tracking-tighter">
+                <LogIn size={14} className="mr-1.5" /> 로그인
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Award, Mail, Lock, ChevronRight } from 'lucide-react';
+import api from '../api/axios';
 
 /**
  * [Login 컴포넌트]
@@ -10,6 +11,27 @@ import { Award, Mail, Lock, ChevronRight } from 'lucide-react';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
+  const navigate = useNavigate();
+
+  const handleKakaoLogin = () => {
+    const REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+    const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI;
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  };
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/auth/login', { email, password: pw });
+
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('loginTime', new Date().getTime());
+
+      window.location.href = '/';
+    } catch (error) {
+      alert("로그인 실패: 이메일이나 비밀번호를 확인해주세요.");
+    }
+  };
 
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[#EAECEF] flex items-center justify-center py-12 px-6">
@@ -27,7 +49,11 @@ const Login = () => {
 
         <div className="p-10 space-y-8">
           {/* REQ-AUTH-001: 카카오 소셜 로그인 버튼  */}
-          <button className="w-full bg-[#FEE500] text-[#3c1e1e] py-4 rounded-xl font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition transform active:scale-[0.98]">
+          <button
+            type="button"
+            onClick={handleKakaoLogin}
+            className="w-full bg-[#FEE500] text-[#3c1e1e] py-4 rounded-xl font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition transform active:scale-[0.98]"
+          >
             <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" alt="kakao" className="w-5 h-5 mr-3" />
             카카오톡으로 간편 로그인
           </button>
@@ -38,17 +64,17 @@ const Login = () => {
           </div>
 
           {/* REQ-AUTH-003: 이메일/비밀번호 기반 로그인 폼  */}
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleEmailLogin}>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase ml-1 tracking-widest">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="이메일을 입력합니다" 
-                  className="w-full bg-gray-50 border border-gray-100 p-4 pl-12 rounded-xl outline-none focus:border-[#3478B8] transition text-sm font-medium" 
+                  placeholder="이메일을 입력합니다"
+                  className="w-full bg-gray-50 border border-gray-100 p-4 pl-12 rounded-xl outline-none focus:border-[#3478B8] transition text-sm font-medium"
                 />
               </div>
             </div>
@@ -56,7 +82,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Password</label>
-                <button type="button" className="text-[10px] text-[#3478B8] font-bold">비밀번호 찾기</button>
+                <button type="button" onClick={() => navigate('/find-password')} className="text-[10px] text-[#3478B8] font-bold">비밀번호 찾기</button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
