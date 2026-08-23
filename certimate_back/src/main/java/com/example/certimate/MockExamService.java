@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,17 +49,55 @@ public class MockExamService {
         return mockExam;
     }
 
+    // 한 문제씩 풀기(무한 학습) 모드: 과목 구분 없이 랜덤 1문제를 뽑아 준다
+    @Transactional(readOnly = true)
+    public AiLearn getRandomPracticeQuestion(Long certId, List<Long> excludeIds) {
+        List<AiLearn> result = (excludeIds == null || excludeIds.isEmpty())
+                ? aiLearnRepository.findRandomQuestion(certId)
+                : aiLearnRepository.findRandomQuestionExcluding(certId, excludeIds);
+
+        // 제외 대상이 너무 많아 더 뽑을 문제가 없으면 제외 없이 다시 랜덤 출제한다
+        if (result.isEmpty() && excludeIds != null && !excludeIds.isEmpty()) {
+            result = aiLearnRepository.findRandomQuestion(certId);
+        }
+        return result.isEmpty() ? null : result.get(0);
+    }
+
     @Transactional
-    public void saveHistory(Long userId, List<QuizHistoryDto> historyList) {
-        for (QuizHistoryDto dto : historyList) {
+    public List<GradedAnswerResponse> submitAndGrade(Long userId, List<QuizHistoryDto> submissions) {
+        List<Long> learnIds = submissions.stream().map(QuizHistoryDto::getLearnId).toList();
+        Map<Long, AiLearn> learnById = aiLearnRepository.findAllById(learnIds).stream()
+                .collect(Collectors.toMap(AiLearn::getLearnId, Function.identity()));
+
+        List<GradedAnswerResponse> results = new ArrayList<>();
+        for (QuizHistoryDto dto : submissions) {
+            AiLearn learn = learnById.get(dto.getLearnId());
+            // AI_LEARN.answer는 보기 텍스트가 아니라 1-based 인덱스로 저장되어 있으므로
+            // 실제 정답 텍스트로 변환한 뒤 사용자가 고른 보기 텍스트와 비교한다.
+            String correctAnswerText = learn != null ? learn.getCorrectAnswerText() : null;
+            boolean isCorrect = correctAnswerText != null && correctAnswerText.equals(dto.getUserAnswer());
+
+            boolean isImportant = Boolean.TRUE.equals(dto.getIsImportant());
+
             UserQuizHistory history = new UserQuizHistory();
             history.setUserId(userId);
             history.setLearnId(dto.getLearnId());
             history.setUserAnswer(dto.getUserAnswer());
-            history.setIsCorrect(dto.getIsCorrect());
-
-            // 이제 historyRepository를 정상적으로 사용할 수 있습니다!
+            history.setIsCorrect(isCorrect);
+            history.setIsImportant(isImportant);
             historyRepository.save(history);
+
+            results.add(new GradedAnswerResponse(
+                    dto.getLearnId(),
+                    learn != null ? learn.getQuestion() : null,
+                    learn != null ? learn.getOptions() : null,
+                    correctAnswerText,
+                    dto.getUserAnswer(),
+                    isCorrect,
+                    learn != null ? learn.getExplanation() : null,
+                    isImportant
+            ));
         }
+        return results;
     }
 }

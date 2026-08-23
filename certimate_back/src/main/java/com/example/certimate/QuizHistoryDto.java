@@ -8,5 +8,5 @@ import lombok.Setter;
 public class QuizHistoryDto {
     private Long learnId;
     private String userAnswer;
-    private Boolean isCorrect;
+    private Boolean isImportant;
 }

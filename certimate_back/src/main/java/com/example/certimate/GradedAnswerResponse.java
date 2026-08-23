@@ -1,15 +1,12 @@
 package com.example.certimate;
 
-import java.time.LocalDateTime;
-
-public record WrongAnswerResponse(
-        Long historyId,
+public record GradedAnswerResponse(
         Long learnId,
         String question,
         String options,
-        String answer,
+        String correctAnswer,
         String userAnswer,
+        Boolean isCorrect,
         String explanation,
-        LocalDateTime solvedAt,
         Boolean isImportant
 ) {}

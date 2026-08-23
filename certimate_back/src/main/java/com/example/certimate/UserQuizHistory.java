@@ -22,6 +22,7 @@ public class UserQuizHistory {
 
     private String userAnswer;
     private Boolean isCorrect;
+    private Boolean isImportant;
 
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime solvedAt;

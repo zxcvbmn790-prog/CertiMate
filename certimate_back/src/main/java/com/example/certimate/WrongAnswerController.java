@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*") // CORS 허용 (개발 환경용)
 @RestController
 @RequestMapping("/api/exams/history")
 @RequiredArgsConstructor

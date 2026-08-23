@@ -37,10 +37,11 @@ public class WrongAnswerService {
                             history.getLearnId(),
                             learn != null ? learn.getQuestion() : null,
                             learn != null ? learn.getOptions() : null,
-                            learn != null ? learn.getAnswer() : null,
+                            learn != null ? learn.getCorrectAnswerText() : null,
                             history.getUserAnswer(),
                             learn != null ? learn.getExplanation() : null,
-                            history.getSolvedAt()
+                            history.getSolvedAt(),
+                            history.getIsImportant()
                     );
                 })
                 .toList();
